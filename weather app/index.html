@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whether App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="card">
+    <!-- header -->
+    <h1 id="header">Welcome to Jy Weather Checker</h1>
+    <!-- search part -->
+    <div class="search">
+      <input type="text" placeholder="Enter City Name" spellcheck="false">
+      <button><img src="images/search.png" alt=""></button>
+    </div>
+    <!-- For error case -->
+    <div class="error">
+      <p>Invalid city name, please try again...</p>
+    </div>
+    <!-- weather part -->
+    <div class="weather">
+      <img src="images/rain.png" class="weather-icon">
+      <h1 class="temp">XXX°c</h1>
+      <h2 class="city">XXX</h2>
+      <!-- Weather Details -->
+      <div class="details">
+        <div class="col">
+          <img src="images/humidity.png">
+          <div>
+            <p class="humidity">XXX%</p>
+            <p>Humidity</p>
+          </div>
+        </div>
+        <div class="col">
+          <img src="images/wind.png">
+          <div>
+            <p class="wind">XXXkm/h</p>
+            <p>Wind Speed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript part -->
+  <script>
+    // variables use for Open Weather Map
+    const apiKey = "19d1e2da9663201005d6a3fdb218886e";
+    // const city = "Malaysia"
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=`;
+
+    const searchBox = document.querySelector(".search input");
+    const searchBtn = document.querySelector(".search button");
+
+    const weatherIcon = document.querySelector(".weather .weather-icon")
+    const weather = document.querySelector(".weather")
+    const weatherError = document.querySelector(".error")
+
+    async function checkWeather(city) {
+      const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+
+      //check if the country name correct or not
+      if (response.status === 404) {
+        weather.style.display = "none"
+        weatherError.style.display = "block";
+      } else {
+        // show the data of weather part to the user
+        weatherError.style.display = "none";
+        weather.style.display = "block"
+      }
+
+      let data = await response.json();
+
+      //check purposes
+      // console.log(data);
+
+      document.querySelector(".city").innerHTML = data.name;
+      document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
+      document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+      document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+      //update the image according to weather condition
+      console.log(data.weather[0].main);
+      if (data.weather[0].main === "Clouds") {
+        weatherIcon.src = "./images/clouds.png"
+      } else if (data.weather[0].main === "Clear") {
+        weatherIcon.src = "./images/clear.png"
+      } else if (data.weather[0].main === "Drizzle") {
+        weatherIcon.src = "./images/drizzle.png"
+      } else if (data.weather[0].main === "Mist") {
+        weatherIcon.src = "./images/mist.png"
+      } else if (data.weather[0].main === "Rain") {
+        weatherIcon.src = "./images/rain.png"
+      } else if (data.weather[0].main === "Snow") {
+        weatherIcon.src = "./images/snow.png"
+      }
+    }
+
+    searchBtn.addEventListener("click", () => {
+      //call checkWeather function 
+      checkWeather(searchBox.value); //will get the value from the input box
+      searchBox.value = ""; //set the value in search box to empty
+    })
+
+  </script>
+
+
+</body>
+
+</html>
